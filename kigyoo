@@ -1,0 +1,483 @@
+
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kígyós Játék</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+
+ <!-- Menüfelület -->
+ <div id="menu">
+  <div class="title-container">
+  <img src="képek/snake_pic.png" alt="Kígyó Ikon" class="icon"></div>
+  <h1>Kígyós Játék</h1>
+  <br>
+
+
+  <button class="button-79" role="button" onclick="startGame()">Start</button>
+  <button class="button-79" role="button" onclick="openSettings()">Settings</button>
+  <button class="button-79" role="button" onclick="openHelp()">Help</button>
+
+</div>
+
+<!-- Settings ablak -->
+<div id="settings" class="settings-container" style="display: none;">
+  <h2>Beállítások</h2>
+  <label for="speedInput">Sebesség (ms):</label>
+  <input type="number" id="speedInput" min="50" max="500" value="200">
+  <button onclick="applySettings()">Mentés</button>
+  <button onclick="closeSettings()">Mégse</button>
+</div>
+
+<div id="help" class="help-container" style="display: none;">
+  <h2>Segítség</h2>
+  <p>A játék vezérlése:</p>
+  <br>
+  <ul>
+    <li><strong>Balra:</strong> Bal nyílbillentyű</li>
+    <li><strong>Jobbra:</strong> Jobb nyílbillentyű</li>
+    <li><strong>Fel:</strong> Fel nyílbillentyű</li>
+    <li><strong>Le:</strong> Le nyílbillentyű</li>
+  </ul>
+  <br>
+  <p>A cél az, hogy minél több táplálékot vegyél fel a kígyó hosszának növelésével!</p>
+  <button onclick="closeHelp()">Bezárás</button>
+</div>
+
+
+<!-- Játéktér -->
+<div class="game-container" id="game-container" style="display: none;">
+  <canvas id="gameCanvas"></canvas>
+  <div class="score-container">
+    <h1>Pontszám: <span id="score">0</span></h1>
+
+</div>
+
+
+
+
+
+
+
+ <!-- Settings ablak -->
+ <div id="settings" class="settings-container" style="display: none;">
+  <h2>Beállítások</h2>
+  <label for="speedInput">Sebesség (ms):</label>
+  <input type="number" id="speedInput" min="50" max="500" value="200">
+  <button onclick="applySettings()">Mentés</button>
+  <button onclick="closeSettings()">Mégse</button>
+</div>
+
+
+
+
+
+<style>
+  * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
+  background-color: #000;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+.title-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.icon {
+  width: 300px;   /* Ikon szélessége */
+  height: 300px;  /* Ikon magassága */
+  margin-bottom: 30px; /* Távolság a cím alatt */
+}
+
+
+ /* Menü stílusok */
+ .menu-container, .settings-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+
+
+  .menu-container button, .settings-container button {
+    padding: 10px 20px;
+    font-size: 18px;
+    cursor: pointer;
+    margin: 5px;
+  }
+
+  /* Help ablak stílus */
+  .help-container {
+    background-color: #222;
+    padding: 20px;
+    border: 1px solid #555;
+    position: absolute;
+    top: 20%;
+    letter-spacing: 0.2em;
+  }
+
+
+    /* Settings ablak stílus */
+    .settings-container {
+    background-color: #222;
+    padding: 20px;
+    border: 1px solid #555;
+    position: absolute;
+    top: 20%;
+    letter-spacing: 0.2em;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+.button-79 {
+  backface-visibility: hidden;
+  background: #332cf2;
+  border: 0;
+  border-radius: .375rem;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  font-family: Circular,Helvetica,sans-serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  line-height: 1.3;
+  padding: 1rem 1.25rem;
+  position: relative;
+  text-align: left;
+  text-decoration: none;
+  transform: translateZ(0) scale(1);
+  transition: transform .2s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.button-79:disabled {
+  color: #787878;
+  cursor: auto;
+}
+
+.button-79:not(:disabled):hover {
+  transform: scale(1.05);
+}
+
+.button-79:not(:disabled):hover:active {
+  transform: scale(1.05) translateY(.125rem);
+}
+
+.button-79:focus {
+  outline: 0 solid transparent;
+}
+
+.button-79:focus:before {
+  border-width: .125rem;
+  content: "";
+  left: calc(-1*.375rem);
+  pointer-events: none;
+  position: absolute;
+  top: calc(-1*.375rem);
+  transition: border-radius;
+  user-select: none;
+}
+
+.button-79:focus:not(:focus-visible) {
+  outline: 0 solid transparent;
+}
+
+.button-79:not(:disabled):active {
+  transform: translateY(.125rem);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+.game-container {
+  margin: 20px;
+
+}
+
+canvas {
+  background-color: #111;
+  border: 2px solid #444;
+}
+
+.score-container {
+  margin-top: 20px;
+  align-content: center;
+}
+
+
+  canvas {
+  background-image: url('képek/barlang.png'); /* Háttérkép beállítása */
+  background-size: cover; /* A kép lefedi az egész területet */
+  border: 2px solid #444;
+}
+
+
+</style>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const gridSize = 20; // Egy rács mérete (pixelben)
+const gridCount = 20; // Az új pálya mérete (rácsok száma sorban és oszlopban)
+
+canvas.width = gridSize * gridCount;  
+canvas.height = gridSize * gridCount;
+
+let snake = [{ x: 10, y: 10 }];
+let direction = { x: 0, y: 0 };
+let food = { x: 15, y: 15 };
+let score = 0;
+let gameOver = false;
+let speed = 250; // Kezdeti sebesség milliszekundumban
+
+
+
+
+  // Kép betöltése
+  const headImage = new Image();
+    headImage.src = 'képek/fej.png'; // Kígyó fejének képe
+
+    const bodyImage = new Image();
+    bodyImage.src = 'képek/test.png'; // Kígyó testének képe
+
+
+
+
+
+document.addEventListener("keydown", changeDirection);
+
+
+
+  // Start gomb funkciója
+  function startGame() {
+    document.getElementById("menu").style.display = "none";
+    document.getElementById("game-container").style.display = "block";
+    score = 0;
+    gameOver = false;
+    snake = [{ x: 10, y: 10 }];
+    direction = { x: 0, y: 0 };
+    generateFood();
+    gameLoop();
+  }
+
+  // Settings gomb funkciója
+  function openSettings() {
+    document.getElementById("settings").style.display = "flex";
+  }
+
+  function closeSettings() {
+    document.getElementById("settings").style.display = "none";
+  }
+
+  function applySettings() {
+    const newSpeed = parseInt(document.getElementById("speedInput").value);
+    if (!isNaN(newSpeed) && newSpeed >= 50 && newSpeed <= 500) {
+      speed = newSpeed;
+      alert("Sebesség beállítva: " + speed + " ms");
+    } else {
+      alert("Kérjük, adjon meg egy érvényes sebességet 50 és 500 között.");
+    }
+    closeSettings();
+  }
+
+  function openHelp() {
+    document.getElementById("help").style.display = "flex";
+  }
+  function closeHelp() {
+    document.getElementById("help").style.display = "none";
+  }
+
+  function endGame() {
+    alert("Game Over! Pontszám: " + score);
+    document.getElementById("menu").style.display = "flex";
+    document.getElementById("game-container").style.display = "none";
+    gameOver = true;
+  }
+
+  function gameLoop() {
+    if (gameOver) {
+      endGame();
+      return;
+    }
+
+    setTimeout(() => {
+      clearCanvas();
+      drawFood();
+      moveSnake();
+      drawSnake();
+      checkCollision();
+      gameLoop();
+    }, speed);
+  }
+
+
+
+
+
+
+
+
+  function moveSnake() {
+  // Új fej pozíció létrehozása az aktuális irány szerint
+  const head = { 
+    x: snake[0].x + direction.x, 
+    y: snake[0].y + direction.y 
+  };
+
+  // Fej hozzáadása a kígyó elejére
+  snake.unshift(head);
+
+  // Ellenőrzés: ha a fej eléri a táplálékot
+  if (head.x === food.x && head.y === food.y) {
+    score++;
+    document.getElementById("score").innerText = score;
+    generateFood();         // Új táplálék létrehozása
+    speed = Math.max(50, speed - 10);  // Sebesség növelése
+  } else {
+    // Farok eltávolítása, ha nem találkozik táplálékkal
+    snake.pop();
+  }
+}
+
+function drawSnake() {
+      // Fej rajzolása
+      ctx.drawImage(headImage, snake[0].x * gridSize, snake[0].y * gridSize, gridSize, gridSize);
+
+      // Test rajzolása
+      for (let i = 1; i < snake.length; i++) {
+        ctx.drawImage(bodyImage, snake[i].x * gridSize, snake[i].y * gridSize, gridSize, gridSize);
+      }
+    }
+
+
+
+function drawFood() {
+  ctx.fillStyle = "yellow";
+  ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
+}
+
+function changeDirection(event) {
+  const key = event.keyCode;
+
+  if (key === 37 && direction.x === 0) { // Bal
+    direction = { x: -1, y: 0 };
+    rotationAngle = Math.PI; // Balra nézés
+  } else if (key === 38 && direction.y === 0) { // Fel
+    direction = { x: 0, y: -1 };
+    rotationAngle = -Math.PI / 2; // Fel nézés
+  } else if (key === 39 && direction.x === 0) { // Jobb
+    direction = { x: 1, y: 0 };
+    rotationAngle = 0; // Jobbra nézés
+  } else if (key === 40 && direction.y === 0) { // Le
+    direction = { x: 0, y: 1 };
+    rotationAngle = Math.PI / 2; // Le nézés
+  }
+}
+
+function generateFood() {
+  food = {
+    x: Math.floor(Math.random() * gridCount),  // Az új gridCount változóval generálunk pozíciót
+    y: Math.floor(Math.random() * gridCount)
+  };
+}
+
+
+function checkCollision() {
+  const head = snake[0];
+  if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20) {
+    gameOver = true;
+  }
+
+  for (let i = 1; i < snake.length; i++) {
+    if (head.x === snake[i].x && head.y === snake[i].y) {
+      gameOver = true;
+    }
+  }
+}
+
+function clearCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+gameLoop();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
+</body>
+</html>
